@@ -1,40 +1,42 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg};
 
+type Point = Vec3;
+
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
-struct Vec3 {
+pub struct Vec3 {
     e: [f64; 3],
 }
 
 impl Vec3 {
-    fn new(x: f64, y: f64, z: f64) -> Self {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { e: [x, y, z] }
     }
 
-    fn x(&self) -> f64 {
+    pub fn x(&self) -> f64 {
         self[0]
     }
 
-    fn y(&self) -> f64 {
+    pub fn y(&self) -> f64 {
         self[1]
     }
 
-    fn z(&self) -> f64 {
+    pub fn z(&self) -> f64 {
         self[2]
     }
 
-    fn norm(&self) -> f64 {
+    pub fn norm(&self) -> f64 {
         (self[0].powf(2.0) + self[1].powf(2.0) + self[2].powf(2.0)).sqrt()
     }
 
-    fn norm_sq(&self) -> f64 {
+    pub fn norm_sq(&self) -> f64 {
         self[0].powf(2.0) + self[1].powf(2.0) + self[2].powf(2.0)
     }
 
-    fn dot(&self, other: Vec3) -> f64 {
+    pub fn dot(&self, other: Vec3) -> f64 {
         self[0] * other[0] + self[1] * other[1] + self[2] * other[2]
     }
 
-    fn cross(&self, other: Vec3) -> Self {
+    pub fn cross(&self, other: Vec3) -> Self {
         Self::new(
             self[1] * other[2] - self[2] * other[1],
             self[0] * other[2] - self[2] * other[0],
@@ -42,7 +44,7 @@ impl Vec3 {
         )
     }
 
-    fn unit(&self) -> Self {
+    pub fn unit(&self) -> Self {
         *self / self.norm()
     }
 }
