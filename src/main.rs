@@ -1,5 +1,5 @@
 use crate::color::Color;
-use crate::color::color_pixel;
+use std::fmt::Write;
 use std::fs;
 
 mod color;
@@ -13,9 +13,9 @@ fn main() {
     let img_width = 256;
     let img_height = 256;
 
-    ppm.push_str("P3\n"); // magic number
-    ppm.push_str(&format!("{} {}\n", img_width, img_height)); // width <SP> height
-    ppm.push_str("255\n"); // maxval
+    writeln!(ppm, "P3"); // magic number
+    writeln!(ppm, "{} {}", img_width, img_height); // width <SP> height
+    writeln!(ppm, "255"); // maxval
     // pixel array
     for i in 0..img_width {
         for j in 0..img_height {
@@ -24,8 +24,7 @@ fn main() {
                 j as f64 / img_height as f64,
                 0.0,
             );
-            let color = color_pixel(color);
-            ppm.push_str(&format!("{}\n", color));
+            writeln!(ppm, "{}", color);
         }
     }
 

@@ -1,18 +1,16 @@
 use crate::vec3::Vec3;
+use std::fmt::Display;
+use std::fmt::Error;
+use std::fmt::Formatter;
 
 pub type Color = Vec3;
 
-pub fn color_pixel(color: Color) -> String {
-    let mut out = String::new();
-    let r = (color.x() * 255.999) as u8;
-    let g = (color.y() * 255.999) as u8;
-    let b = (color.z() * 255.999) as u8;
+impl Display for Color {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        let r = (self.x() * 255.999) as u8;
+        let g = (self.y() * 255.999) as u8;
+        let b = (self.z() * 255.999) as u8;
 
-    out.push_str(&r.to_string());
-    out.push(' ');
-    out.push_str(&g.to_string());
-    out.push(' ');
-    out.push_str(&b.to_string());
-    
-    out
+        write!(f, "{} {} {}", r, g, b)
+    }
 }
