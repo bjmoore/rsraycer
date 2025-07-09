@@ -16,6 +16,7 @@ mod hittable_list;
 mod ray;
 mod sphere;
 mod vec3;
+mod interval;
 
 const OUT_PATH: &str = "out.ppm";
 
@@ -83,4 +84,9 @@ fn ray_color<T: Hittable>(ray: &Ray, world: &T) -> Color {
     let unit_dir = ray.dir.unit();
     let a = 0.5 * (unit_dir.y() + 1.0);
     Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
+}
+
+
+fn deg_to_rad(deg: f64) -> f64 {
+    deg * std::f64::consts::PI / 180.0
 }
