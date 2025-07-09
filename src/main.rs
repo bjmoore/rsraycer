@@ -61,9 +61,10 @@ fn main() {
     fs::write(OUT_PATH, ppm);
 }
 
+const sphere_center: Vec3 = Vec3::new(0.0, 0.0, -1.0);
+
 fn ray_color(ray: &Ray) -> Color {
-    let sphere_center = Vec3::new(0.0, 0.0, -1.0);
-    let t = hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, ray);
+    let t = hit_sphere(sphere_center, 0.5, ray);
     if t > 0.0 {
         let N = (ray.at(t) - sphere_center).unit();
         return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
@@ -74,8 +75,8 @@ fn ray_color(ray: &Ray) -> Color {
     Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
 }
 
-fn hit_sphere(sphere_center: Point, radius: f64, ray: &Ray) -> f64 {
-    let oc = sphere_center - ray.origin;
+fn hit_sphere(center: Point, radius: f64, ray: &Ray) -> f64 {
+    let oc = center - ray.origin;
     let a = dot(ray.dir, ray.dir);
     let b = -2.0 * dot(ray.dir, oc);
     let c = dot(oc, oc) - radius.powf(2.0);
