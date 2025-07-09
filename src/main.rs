@@ -1,6 +1,7 @@
 use crate::color::Color;
 use crate::vec3::Vec3;
 use crate::vec3::Point;
+use crate::vec3::dot;
 use crate::ray::Ray;
 use std::fmt::Write;
 use std::fs;
@@ -52,15 +53,29 @@ fn main() {
             let pixel_center = anchor_pixel + (i * pixel_delta_u) + (j * pixel_delta_v);
             let ray_direction = pixel_center - camera_center;
             let ray = Ray::new(camera_center, ray_direction);
-            writeln!(ppm, "{}", ray_color(ray));
+            writeln!(ppm, "{}", ray_color(&ray));
         }
     }
 
     fs::write(OUT_PATH, ppm);
 }
 
-fn ray_color(ray: Ray) -> Color {
+fn ray_color(ray: &Ray) -> Color {
+    if hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, ray) {
+        return Color::new(1.0, 0.0, 0.0);
+    }
+    
     let unit_dir = ray.dir.unit();
     let a = 0.5 * (unit_dir.y() + 1.0);
     Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
+}
+
+fn hit_sphere(sphere_center: Point, radius: f64, ray: &Ray) -> bool {
+    let oc = sphere_center - ray.origin;
+    let a = dot(ray.dir, ray.dir);
+    let b = -2.0 * dot(ray.dir, oc);
+    let c = dot(oc, oc) - radius.powf(2.0);
+    let discriminant = b.powf(2.0) - 4.0*a*c;
+
+    discriminant >= 0.0
 }

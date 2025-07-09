@@ -34,21 +34,22 @@ impl Vec3 {
         self[0].powf(2.0) + self[1].powf(2.0) + self[2].powf(2.0)
     }
 
-    pub fn dot(&self, other: Vec3) -> f64 {
-        self[0] * other[0] + self[1] * other[1] + self[2] * other[2]
-    }
-
-    pub fn cross(&self, other: Vec3) -> Self {
-        Self::new(
-            self[1] * other[2] - self[2] * other[1],
-            self[0] * other[2] - self[2] * other[0],
-            self[0] * other[1] - self[1] * other[0],
-        )
-    }
 
     pub fn unit(&self) -> Self {
         *self / self.norm()
     }
+}
+
+pub fn dot(a: Vec3, b: Vec3) -> f64 {
+    a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+
+pub fn cross(a: Vec3, b: Vec3) -> Vec3 {
+    Vec3::new(
+        a[1] * b[2] - a[2] * b[1],
+        a[0] * b[2] - a[2] * b[0],
+        a[0] * b[1] - a[1] * b[0],
+    )
 }
 
 impl Neg for Vec3 {
@@ -275,7 +276,7 @@ mod test {
         let w = Vec3::new(2.0, 2.0, 2.0);
         let expected = 2.0 * 2.0 + 2.0 * 2.0 + 2.0 * 2.0;
 
-        assert_eq!(v.dot(w), expected);
+        assert_eq!(dot(v, w), expected);
     }
 
     #[test]
@@ -284,7 +285,7 @@ mod test {
         let v = Vec3::new(0.0, 2.0, 0.0);
         let expected = Vec3::new(0.0, 0.0, 4.0);
 
-        assert_eq!(u.cross(v), expected);
+        assert_eq!(cross(u, v), expected);
     }
 
     #[test]
