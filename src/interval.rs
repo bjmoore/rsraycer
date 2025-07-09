@@ -1,5 +1,5 @@
-const empty: Interval = Interval::new(f64::INFINITY, -f64::INFINITY);
-const universe: Interval = Interval::new(-f64::INFINITY, f64::INFINITY);
+const EMPTY: Interval = Interval::new(f64::INFINITY, -f64::INFINITY);
+const UNIVERSE: Interval = Interval::new(-f64::INFINITY, f64::INFINITY);
 
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Interval {
