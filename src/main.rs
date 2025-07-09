@@ -3,12 +3,16 @@ use crate::ray::Ray;
 use crate::vec3::Point;
 use crate::vec3::Vec3;
 use crate::vec3::dot;
+use crate::sphere::Sphere;
+use crate::hittable::Hittable;
 use std::fmt::Write;
 use std::fs;
 
 mod color;
 mod ray;
 mod vec3;
+mod hittable;
+mod sphere;
 
 const OUT_PATH: &str = "out.ppm";
 
@@ -62,12 +66,14 @@ fn main() {
 }
 
 const sphere_center: Vec3 = Vec3::new(0.0, 0.0, -1.0);
+const sphere: Sphere = Sphere::new(sphere_center, 0.5);
 
 fn ray_color(ray: &Ray) -> Color {
-    let t = hit_sphere(sphere_center, 0.5, ray);
-    if t > 0.0 {
-        let N = (ray.at(t) - sphere_center).unit();
-        return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
+    if let Some(hit_rec) = sphere.hit(ray, 0.0, 2.0) {
+        if hit_rec.t > 0.0 {
+            let N = hit_rec.normal;
+            return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
+        }
     }
 
     let unit_dir = ray.dir.unit();
