@@ -1,18 +1,21 @@
 use crate::color::Color;
+use crate::hittable::Hittable;
+use crate::hittable_list::HittableList;
 use crate::ray::Ray;
+use crate::sphere::Sphere;
 use crate::vec3::Point;
 use crate::vec3::Vec3;
 use crate::vec3::dot;
-use crate::sphere::Sphere;
-use crate::hittable::Hittable;
 use std::fmt::Write;
 use std::fs;
+use std::rc::Rc;
 
 mod color;
-mod ray;
-mod vec3;
 mod hittable;
+mod hittable_list;
+mod ray;
 mod sphere;
+mod vec3;
 
 const OUT_PATH: &str = "out.ppm";
 
@@ -30,6 +33,11 @@ fn main() {
     // viewport_* values are the dimensions of the viewing rectangle in world-space.
     let viewport_height: f64 = 2.0;
     let viewport_width: f64 = viewport_height * (img_width as f64) / (img_height as f64);
+
+    // world of spheres.
+    let mut world = HittableList::new();
+    world.add(Rc::new(Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Rc::new(Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0)));
 
     // other camera parameters.
     let focal_length = 1.0;
@@ -58,21 +66,17 @@ fn main() {
             let pixel_center = anchor_pixel + (i * pixel_delta_u) + (j * pixel_delta_v);
             let ray_direction = pixel_center - camera_center;
             let ray = Ray::new(camera_center, ray_direction);
-            writeln!(ppm, "{}", ray_color(&ray));
+            writeln!(ppm, "{}", ray_color(&ray, &world));
         }
     }
 
     fs::write(OUT_PATH, ppm);
 }
 
-const sphere_center: Vec3 = Vec3::new(0.0, 0.0, -1.0);
-const sphere: Sphere = Sphere::new(sphere_center, 0.5);
-
-fn ray_color(ray: &Ray) -> Color {
-    if let Some(hit_rec) = sphere.hit(ray, 0.0, 2.0) {
-        if hit_rec.t > 0.0 {
-            let N = hit_rec.normal;
-            return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
+fn ray_color<T: Hittable>(ray: &Ray, world: &T) -> Color {
+    if let Some(hit) = world.hit(ray, 0.0, f64::MAX) {
+        if hit.t > 0.0 {
+            return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
         }
     }
 
