@@ -1,4 +1,4 @@
-use crate::hittable::HitResult;
+use crate::hittable::Hit;
 use crate::hittable::Hittable;
 use crate::ray::Ray;
 use crate::vec3::Point;
@@ -16,7 +16,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitResult> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let oc = self.center - ray.origin;
         let a = ray.dir.norm_sq();
         let h = dot(ray.dir, oc);
@@ -36,7 +36,7 @@ impl Hittable for Sphere {
             }
         }
 
-        let mut result = HitResult::default();
+        let mut result = Hit::default();
         result.p = ray.at(root);
         result.t = root;
         let outward_normal = (result.p - self.center).unit();

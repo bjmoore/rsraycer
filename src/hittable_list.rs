@@ -1,4 +1,4 @@
-use crate::hittable::HitResult;
+use crate::hittable::Hit;
 use crate::hittable::Hittable;
 use crate::ray::Ray;
 use std::rc::Rc;
@@ -20,7 +20,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitResult> {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let mut result = None;
         let mut current_max = t_max;
 
