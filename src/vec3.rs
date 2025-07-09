@@ -1,6 +1,8 @@
-use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg};
+use std::ops::{
+    Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
+};
 
-type Point = Vec3;
+pub type Point = Vec3;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Vec3 {
@@ -85,6 +87,20 @@ impl AddAssign for Vec3 {
     }
 }
 
+impl Sub for Vec3 {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self::new(self[0] - other[0], self[1] - other[1], self[2] - other[2])
+    }
+}
+
+impl SubAssign for Vec3 {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self::new(self[0] - other[0], self[1] - other[1], self[2] - other[2]);
+    }
+}
+
 impl Mul<f64> for Vec3 {
     type Output = Self;
 
@@ -96,6 +112,18 @@ impl Mul<f64> for Vec3 {
 impl MulAssign<f64> for Vec3 {
     fn mul_assign(&mut self, scale: f64) {
         *self = Self::new(self[0] * scale, self[1] * scale, self[2] * scale);
+    }
+}
+
+impl Mul<Vec3> for u32 {
+    type Output = Vec3;
+
+    fn mul(self, vector: Vec3) -> Self::Output {
+        Self::Output::new(
+            vector[0] * self as f64,
+            vector[1] * self as f64,
+            vector[2] * self as f64,
+        )
     }
 }
 
@@ -153,6 +181,25 @@ mod test {
         let expected = Vec3::new(2.0, 2.0, 2.0);
 
         v += v.clone();
+        assert_eq!(v, expected);
+    }
+
+    #[test]
+    fn test_sub() {
+        let v = Vec3::new(1.0, 1.0, 1.0);
+        let w = Vec3::new(2.0, 3.0, 4.0);
+        let expected = Vec3::new(-1.0, -2.0, -3.0);
+
+        assert_eq!(v - w, expected);
+    }
+
+    #[test]
+    fn test_sub_assign() {
+        let mut v = Vec3::new(1.0, 1.0, 1.0);
+        let w = Vec3::new(2.0, 3.0, 4.0);
+        let expected = Vec3::new(-1.0, -2.0, -3.0);
+
+        v -= w;
         assert_eq!(v, expected);
     }
 
