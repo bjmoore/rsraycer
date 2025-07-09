@@ -33,7 +33,7 @@ fn main() {
 
     // w/l vectors for the viewport rectangle.
     let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);
-    let viewport_v = Vec3::new(0.0, viewport_height, 0.0);
+    let viewport_v = Vec3::new(0.0, -viewport_height, 0.0);
 
     // pixel-to-pixel spacing vectors.
     let pixel_delta_u = viewport_u / (img_width as f64);
