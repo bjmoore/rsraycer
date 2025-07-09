@@ -1,6 +1,7 @@
 use crate::color::Color;
 use crate::hittable::Hittable;
 use crate::hittable_list::HittableList;
+use crate::interval::Interval;
 use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::vec3::Point;
@@ -13,10 +14,10 @@ use std::rc::Rc;
 mod color;
 mod hittable;
 mod hittable_list;
+mod interval;
 mod ray;
 mod sphere;
 mod vec3;
-mod interval;
 
 const OUT_PATH: &str = "out.ppm";
 
@@ -75,7 +76,7 @@ fn main() {
 }
 
 fn ray_color<T: Hittable>(ray: &Ray, world: &T) -> Color {
-    if let Some(hit) = world.hit(ray, 0.0, f64::MAX) {
+    if let Some(hit) = world.hit(ray, Interval::new(0.0, f64::INFINITY)) {
         if hit.t > 0.0 {
             return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
         }
@@ -85,7 +86,6 @@ fn ray_color<T: Hittable>(ray: &Ray, world: &T) -> Color {
     let a = 0.5 * (unit_dir.y() + 1.0);
     Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
 }
-
 
 fn deg_to_rad(deg: f64) -> f64 {
     deg * std::f64::consts::PI / 180.0

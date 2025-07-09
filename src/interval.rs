@@ -1,8 +1,8 @@
 const empty: Interval = Interval::new(f64::INFINITY, -f64::INFINITY);
 const universe: Interval = Interval::new(-f64::INFINITY, f64::INFINITY);
 
-#[derive(Debug, Clone, Default, PartialEq)]
-struct Interval {
+#[derive(Debug, Copy, Clone, Default, PartialEq)]
+pub struct Interval {
     pub min: f64,
     pub max: f64,
 }
