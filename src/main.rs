@@ -1,8 +1,8 @@
 use crate::color::Color;
-use crate::vec3::Vec3;
-use crate::vec3::Point;
-use crate::vec3::dot;
 use crate::ray::Ray;
+use crate::vec3::Point;
+use crate::vec3::Vec3;
+use crate::vec3::dot;
 use std::fmt::Write;
 use std::fs;
 
@@ -25,7 +25,7 @@ fn main() {
 
     // viewport_* values are the dimensions of the viewing rectangle in world-space.
     let viewport_height: f64 = 2.0;
-    let viewport_width: f64 = viewport_height * (img_width as f64)/(img_height as f64);
+    let viewport_width: f64 = viewport_height * (img_width as f64) / (img_height as f64);
 
     // other camera parameters.
     let focal_length = 1.0;
@@ -40,7 +40,8 @@ fn main() {
     let pixel_delta_v = viewport_v / (img_height as f64);
 
     // anchor loc for top-left pixel.
-    let viewport_upper_left = camera_center - Vec3::new(0.0, 0.0, focal_length) - viewport_u/2.0 - viewport_v/2.0;
+    let viewport_upper_left =
+        camera_center - Vec3::new(0.0, 0.0, focal_length) - viewport_u / 2.0 - viewport_v / 2.0;
     let anchor_pixel = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5;
 
     writeln!(ppm, "P3"); // magic number
@@ -61,21 +62,28 @@ fn main() {
 }
 
 fn ray_color(ray: &Ray) -> Color {
-    if hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, ray) {
-        return Color::new(1.0, 0.0, 0.0);
+    let sphere_center = Vec3::new(0.0, 0.0, -1.0);
+    let t = hit_sphere(Vec3::new(0.0, 0.0, -1.0), 0.5, ray);
+    if t > 0.0 {
+        let N = (ray.at(t) - sphere_center).unit();
+        return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
     }
-    
+
     let unit_dir = ray.dir.unit();
     let a = 0.5 * (unit_dir.y() + 1.0);
     Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
 }
 
-fn hit_sphere(sphere_center: Point, radius: f64, ray: &Ray) -> bool {
+fn hit_sphere(sphere_center: Point, radius: f64, ray: &Ray) -> f64 {
     let oc = sphere_center - ray.origin;
     let a = dot(ray.dir, ray.dir);
     let b = -2.0 * dot(ray.dir, oc);
     let c = dot(oc, oc) - radius.powf(2.0);
-    let discriminant = b.powf(2.0) - 4.0*a*c;
+    let discriminant = b.powf(2.0) - 4.0 * a * c;
 
-    discriminant >= 0.0
+    if discriminant < 0.0 {
+        -1.0
+    } else {
+        (-b - discriminant.sqrt()) / (2.0 * a)
+    }
 }

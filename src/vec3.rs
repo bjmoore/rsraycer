@@ -128,6 +128,18 @@ impl Mul<Vec3> for u32 {
     }
 }
 
+impl Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn mul(self, vector: Vec3) -> Self::Output {
+        Self::Output::new(
+            vector[0] * self,
+            vector[1] * self,
+            vector[2] * self,
+        )
+    }
+}
+
 impl Mul<Vec3> for Vec3 {
     type Output = Self;
 
