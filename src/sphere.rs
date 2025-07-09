@@ -1,20 +1,17 @@
-use crate::hittable::Hittable;
 use crate::hittable::HitResult;
+use crate::hittable::Hittable;
+use crate::ray::Ray;
 use crate::vec3::Point;
 use crate::vec3::dot;
-use crate::ray::Ray;
 
 pub struct Sphere {
     center: Point,
-    radius: f64
+    radius: f64,
 }
 
 impl Sphere {
-    pub const fn new(center: Point, radius: f64) -> Self{
-        Self {
-            center,
-            radius
-        }
+    pub const fn new(center: Point, radius: f64) -> Self {
+        Self { center, radius }
     }
 }
 
@@ -35,16 +32,16 @@ impl Hittable for Sphere {
         if a < t_min || a > t_max {
             root = (h + sqrt_discriminant) / a;
             if a < t_min || a > t_max {
-                return None
+                return None;
             }
         }
 
-        let p = ray.at(root);
+        let mut result = HitResult::default();
+        result.p = ray.at(root);
+        result.t = root;
+        let outward_normal = (result.p - self.center).unit();
+        result.set_face_normal(ray, &outward_normal);
 
-        Some(HitResult {
-            p,
-            normal: (p - self.center) / self.radius,
-            t: root,
-        })
+        Some(result)
     }
 }
