@@ -23,6 +23,14 @@ pub struct Camera {
 }
 
 impl Camera {
+    pub fn new(aspect: f64, img_width: u32) -> Self {
+        Self {
+            aspect,
+            img_width,
+            ..Default::default()
+        }
+    }
+    
     pub fn render<T: Hittable>(&mut self, world: &T) {
         self.initialize();
 
