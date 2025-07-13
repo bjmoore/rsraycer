@@ -102,7 +102,7 @@ impl Camera {
             return Color::new(0.0, 0.0, 0.0);
         }
 
-        if let Some(hit) = world.hit(r, Interval::new(0.0, f64::INFINITY)) {
+        if let Some(hit) = world.hit(r, Interval::new(0.001, f64::INFINITY)) {
             let direction = random_on_hemisphere(hit.normal);
             return 0.5 * self.ray_color(&Ray::new(hit.p, direction), depth - 1, world);
         }
