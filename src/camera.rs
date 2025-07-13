@@ -25,6 +25,7 @@ pub struct Camera {
     pixel_delta_v: Vec3,
     samples_per_pixel: u32,
     pixel_sample_scale: f64,
+    max_depth: u32
 }
 
 impl Camera {
@@ -33,6 +34,7 @@ impl Camera {
             aspect,
             img_width,
             samples_per_pixel: 10,
+            max_depth: 10,
             ..Default::default()
         }
     }
@@ -52,7 +54,7 @@ impl Camera {
                 let mut color = Color::new(0.0, 0.0, 0.0);
                 for _ in 0..self.samples_per_pixel {
                     let r = self.get_ray(i, j);
-                    color += self.ray_color(&r, world);
+                    color += self.ray_color(&r, self.max_depth, world);
                 }
                 writeln!(ppm, "{}", self.pixel_sample_scale * color);
             }
@@ -95,10 +97,14 @@ impl Camera {
         self.pixel_sample_scale = 1.0 / self.samples_per_pixel as f64;
     }
 
-    fn ray_color<T: Hittable>(&self, r: &Ray, world: &T) -> Color {
+    fn ray_color<T: Hittable>(&self, r: &Ray, depth: u32, world: &T) -> Color {
+        if depth == 0 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
+
         if let Some(hit) = world.hit(r, Interval::new(0.0, f64::INFINITY)) {
             let direction = random_on_hemisphere(hit.normal);
-            return 0.5 * self.ray_color(&Ray::new(hit.p, direction), world);
+            return 0.5 * self.ray_color(&Ray::new(hit.p, direction), depth - 1, world);
         }
 
         let unit_dir = r.dir.unit();
