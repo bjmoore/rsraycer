@@ -37,12 +37,10 @@ impl Hittable for Sphere {
             }
         }
 
-        let mut result = Hit::default();
-        result.p = ray.at(root);
-        result.t = root;
-        let outward_normal = (result.p - self.center).unit();
-        result.set_face_normal(ray, &outward_normal);
+        let hit_point = ray.at(root);
+        let outward_normal = (hit_point - self.center).unit();
+        let hit = Hit::new(ray, hit_point, root, &outward_normal);
 
-        Some(result)
+        Some(hit)
     }
 }

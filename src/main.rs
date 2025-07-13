@@ -11,6 +11,7 @@ mod ray;
 mod sphere;
 mod vec3;
 mod camera;
+mod material;
 
 
 fn main() {
