@@ -73,7 +73,7 @@ pub fn random_unit_vector() -> Vec3 {
     loop {
         let p = random_range(-1.0, 1.0);
         let normsq = p.norm_sq();
-        if normsq <= 1.0 {
+        if 1e-100 < normsq && normsq <= 1.0 {
             return p / normsq.sqrt()
         }
     }
