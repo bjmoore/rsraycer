@@ -1,14 +1,6 @@
-use crate::color::Color;
-use crate::hittable::Hittable;
 use crate::hittable_list::HittableList;
-use crate::interval::Interval;
-use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::vec3::Point;
-use crate::vec3::Vec3;
-use crate::vec3::dot;
-use std::fmt::Write;
-use std::fs;
 use std::rc::Rc;
 
 mod color;

@@ -8,7 +8,6 @@ use crate::vec3::Vec3;
 use std::fmt::Write;
 use std::fs;
 
-use rand::distr::StandardUniform;
 use rand::prelude::*;
 
 const OUT_PATH: &str = "out.ppm";
@@ -122,8 +121,8 @@ impl Camera {
 
 fn sample_square() -> Vec3 {
     Vec3::new(
-        rand::rng().sample::<f64, StandardUniform>(StandardUniform) - 0.5f64,
-        rand::rng().sample::<f64, StandardUniform>(StandardUniform) - 0.5f64,
+        rand::rng().random::<f64>() - 0.5f64,
+        rand::rng().random::<f64>() - 0.5f64,
         0.0,
     )
 }

@@ -2,6 +2,8 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
 };
 
+use rand::prelude::*;
+
 pub type Point = Vec3;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
@@ -34,7 +36,6 @@ impl Vec3 {
         self[0].powf(2.0) + self[1].powf(2.0) + self[2].powf(2.0)
     }
 
-
     pub fn unit(&self) -> Self {
         *self / self.norm()
     }
@@ -50,6 +51,32 @@ pub fn cross(a: Vec3, b: Vec3) -> Vec3 {
         a[0] * b[2] - a[2] * b[0],
         a[0] * b[1] - a[1] * b[0],
     )
+}
+
+pub fn random() -> Vec3 {
+    Vec3::new(
+        rand::rng().random::<f64>(),
+        rand::rng().random::<f64>(),
+        rand::rng().random::<f64>(),
+    )
+}
+
+pub fn random_range(min: f64, max: f64) -> Vec3 {
+    Vec3::new(
+        rand::rng().random_range(min..max),
+        rand::rng().random_range(min..max),
+        rand::rng().random_range(min..max),
+    )
+}
+
+pub fn random_unit_vector() -> Vec3 {
+    loop {
+        let p = random_range(-1.0, 1.0);
+        let normsq = p.norm_sq();
+        if normsq <= 1.0 {
+            return p / normsq.sqrt()
+        }
+    }
 }
 
 impl Neg for Vec3 {
@@ -132,11 +159,7 @@ impl Mul<Vec3> for f64 {
     type Output = Vec3;
 
     fn mul(self, vector: Vec3) -> Self::Output {
-        Self::Output::new(
-            vector[0] * self,
-            vector[1] * self,
-            vector[2] * self,
-        )
+        Self::Output::new(vector[0] * self, vector[1] * self, vector[2] * self)
     }
 }
 
