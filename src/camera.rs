@@ -96,9 +96,7 @@ impl Camera {
 
     fn ray_color<T: Hittable>(&self, r: &Ray, world: &T) -> Color {
         if let Some(hit) = world.hit(r, Interval::new(0.0, f64::INFINITY)) {
-            if hit.t > 0.0 {
-                return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
-            }
+            return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
         }
 
         let unit_dir = r.dir.unit();

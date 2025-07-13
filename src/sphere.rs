@@ -30,9 +30,9 @@ impl Hittable for Sphere {
 
         let sqrt_discriminant = discriminant.sqrt();
         let mut root = (h - sqrt_discriminant) / a;
-        if a < ray_t.min || a > ray_t.max {
+        if !ray_t.surrounds(root) {
             root = (h + sqrt_discriminant) / a;
-            if a < ray_t.min || a > ray_t.max {
+            if !ray_t.surrounds(root) {
                 return None;
             }
         }
