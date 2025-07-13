@@ -79,6 +79,15 @@ pub fn random_unit_vector() -> Vec3 {
     }
 }
 
+pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
+    let random_unit_vec = random_unit_vector();
+    if dot(normal, random_unit_vec) > 0.0 {
+        random_unit_vec
+    } else {
+        -random_unit_vec
+    }
+}
+
 impl Neg for Vec3 {
     type Output = Self;
 

@@ -4,6 +4,7 @@ use crate::interval::Interval;
 use crate::ray::Ray;
 use crate::vec3::Point;
 use crate::vec3::Vec3;
+use crate::vec3::random_on_hemisphere;
 
 use std::fmt::Write;
 use std::fs;
@@ -96,7 +97,8 @@ impl Camera {
 
     fn ray_color<T: Hittable>(&self, r: &Ray, world: &T) -> Color {
         if let Some(hit) = world.hit(r, Interval::new(0.0, f64::INFINITY)) {
-            return 0.5 * (hit.normal + Color::new(1.0, 1.0, 1.0));
+            let direction = random_on_hemisphere(hit.normal);
+            return 0.5 * self.ray_color(&Ray::new(hit.p, direction), world);
         }
 
         let unit_dir = r.dir.unit();
