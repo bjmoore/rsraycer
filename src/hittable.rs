@@ -11,10 +11,11 @@ pub struct Hit {
     pub normal: Vec3,
     pub t: f64,
     pub front_face: bool,
+    pub mat: Rc<dyn Material>
 }
 
 impl Hit {
-    pub fn new(r: &Ray, p: Point, t: f64, outward_normal: &Vec3) -> Self {
+    pub fn new(r: &Ray, p: Point, t: f64, outward_normal: &Vec3, mat: Rc<dyn Material>) -> Self {
         let front_face = dot(r.dir, *outward_normal) < 0.0;
         let normal = if front_face {
             *outward_normal
@@ -27,6 +28,7 @@ impl Hit {
             normal,
             t,
             front_face,
+            mat
         }
     }
 }

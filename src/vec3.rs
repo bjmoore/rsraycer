@@ -5,6 +5,7 @@ use std::ops::{
 use rand::prelude::*;
 
 pub type Point = Vec3;
+const NEAR_ZERO_THRESHOLD: f64 = 1e-3;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Vec3 {
@@ -38,6 +39,12 @@ impl Vec3 {
 
     pub fn unit(&self) -> Self {
         *self / self.norm()
+    }
+
+    pub fn near_zero(&self) -> bool {
+        self.e[0] < NEAR_ZERO_THRESHOLD
+            && self.e[1] < NEAR_ZERO_THRESHOLD
+            && self.e[2] < NEAR_ZERO_THRESHOLD
     }
 }
 
@@ -74,7 +81,7 @@ pub fn random_unit_vector() -> Vec3 {
         let p = random_range(-1.0, 1.0);
         let normsq = p.norm_sq();
         if 1e-100 < normsq && normsq <= 1.0 {
-            return p / normsq.sqrt()
+            return p / normsq.sqrt();
         }
     }
 }
@@ -86,6 +93,10 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
     } else {
         -random_unit_vec
     }
+}
+
+pub fn reflect(vector: Vec3, normal: Vec3) -> Vec3 {
+    vector - 2.0 * dot(vector, normal) * normal
 }
 
 impl Neg for Vec3 {
