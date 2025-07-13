@@ -5,6 +5,7 @@ use crate::ray::Ray;
 use crate::vec3::Point;
 use crate::vec3::Vec3;
 use crate::vec3::random_on_hemisphere;
+use crate::vec3::random_unit_vector;
 
 use std::fmt::Write;
 use std::fs;
@@ -103,8 +104,8 @@ impl Camera {
         }
 
         if let Some(hit) = world.hit(r, Interval::new(0.001, f64::INFINITY)) {
-            let direction = random_on_hemisphere(hit.normal);
-            return 0.5 * self.ray_color(&Ray::new(hit.p, direction), depth - 1, world);
+            let direction = hit.normal + random_unit_vector();
+            return 0.3 * self.ray_color(&Ray::new(hit.p, direction), depth - 1, world);
         }
 
         let unit_dir = r.dir.unit();
