@@ -5,6 +5,7 @@ use crate::ray::Ray;
 use crate::vec3::Point;
 use crate::vec3::Vec3;
 use crate::vec3::cross;
+use crate::vec3::random_on_unit_disk;
 
 use std::fmt::Write;
 use std::fs;
@@ -36,10 +37,24 @@ pub struct Camera {
     u: Vec3,
     v: Vec3,
     w: Vec3,
+
+    // Lens parameters
+    defocus_angle: f64,
+    focus_dist: f64,
+
+    defocus_disk_u: Vec3,
+    defocus_disk_v: Vec3,
 }
 
 impl Camera {
-    pub fn new(aspect: f64, img_width: u32, vfov: f64, look_from: Point, look_at: Point, v_up: Vec3) -> Self {
+    pub fn new(
+        aspect: f64,
+        img_width: u32,
+        vfov: f64,
+        look_from: Point,
+        look_at: Point,
+        v_up: Vec3,
+    ) -> Self {
         Self {
             aspect,
             img_width,
@@ -48,7 +63,9 @@ impl Camera {
             look_at,
             v_up,
             samples_per_pixel: 10,
-            max_depth: 10,
+            max_depth: 50,
+            defocus_angle: 0.2,
+            focus_dist: (look_from - look_at).norm(),
             ..Default::default()
         }
     }
@@ -89,19 +106,17 @@ impl Camera {
         self.center = self.look_from;
 
         // other camera parameters.
-        let focal_length = (self.look_from - self.look_at).norm();
         let theta = deg_to_rad(self.vfov);
-        let h = (theta/2.0).tan();
+        let h = (theta / 2.0).tan();
 
         self.w = (self.look_from - self.look_at).unit();
         self.u = cross(self.v_up, self.w).unit();
         self.v = cross(self.w, self.u);
 
         // viewport_* values are the dimensions of the viewing rectangle in world-space.
-        let viewport_height: f64 = 2.0 * h * focal_length;
+        let viewport_height: f64 = 2.0 * h * self.focus_dist;
         let viewport_width: f64 =
             viewport_height * (self.img_width as f64) / (self.img_height as f64);
-
 
         // w/l vectors for the viewport rectangle.
         let viewport_u = viewport_width * self.u;
@@ -113,8 +128,13 @@ impl Camera {
 
         // anchor loc for top-left pixel.
         let viewport_upper_left =
-            self.center - (focal_length * self.w) - viewport_u / 2.0 - viewport_v / 2.0;
+            self.center - (self.focus_dist * self.w) - viewport_u / 2.0 - viewport_v / 2.0;
         self.anchor = viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
+
+        // Lens parameters.
+        let defocus_radius = self.focus_dist * deg_to_rad(self.defocus_angle / 2.0).tan();
+        self.defocus_disk_u = defocus_radius * self.u;
+        self.defocus_disk_v = defocus_radius * self.v;
 
         self.pixel_sample_scale = 1.0 / self.samples_per_pixel as f64;
     }
@@ -142,10 +162,19 @@ impl Camera {
             + (i as f64 + offset.x()) * self.pixel_delta_u
             + (j as f64 + offset.y()) * self.pixel_delta_v;
 
-        let ray_origin = self.center;
+        let ray_origin = if self.defocus_angle <= 0.0 {
+            self.center
+        } else {
+            self.defocus_disk_sample()
+        };
         let ray_direction = pixel_sample - ray_origin;
 
         Ray::new(ray_origin, ray_direction)
+    }
+
+    fn defocus_disk_sample(&self) -> Vec3 {
+        let p = random_on_unit_disk();
+        self.center + (p[0] * self.defocus_disk_u) + (p[1] * self.defocus_disk_v)
     }
 }
 
