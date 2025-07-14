@@ -4,8 +4,7 @@ use crate::interval::Interval;
 use crate::ray::Ray;
 use crate::vec3::Point;
 use crate::vec3::Vec3;
-use crate::vec3::random_on_hemisphere;
-use crate::vec3::random_unit_vector;
+use crate::vec3::cross;
 
 use std::fmt::Write;
 use std::fs;
@@ -26,14 +25,28 @@ pub struct Camera {
     pixel_delta_v: Vec3,
     samples_per_pixel: u32,
     pixel_sample_scale: f64,
-    max_depth: u32
+    max_depth: u32,
+    vfov: f64,
+
+    look_from: Point,
+    look_at: Point,
+    v_up: Vec3,
+
+    // Camera basis vectors
+    u: Vec3,
+    v: Vec3,
+    w: Vec3,
 }
 
 impl Camera {
-    pub fn new(aspect: f64, img_width: u32) -> Self {
+    pub fn new(aspect: f64, img_width: u32, vfov: f64, look_from: Point, look_at: Point, v_up: Vec3) -> Self {
         Self {
             aspect,
             img_width,
+            vfov,
+            look_from,
+            look_at,
+            v_up,
             samples_per_pixel: 10,
             max_depth: 10,
             ..Default::default()
@@ -73,18 +86,26 @@ impl Camera {
             self.img_height
         };
 
+        self.center = self.look_from;
+
+        // other camera parameters.
+        let focal_length = (self.look_from - self.look_at).norm();
+        let theta = deg_to_rad(self.vfov);
+        let h = (theta/2.0).tan();
+
+        self.w = (self.look_from - self.look_at).unit();
+        self.u = cross(self.v_up, self.w).unit();
+        self.v = cross(self.w, self.u);
+
         // viewport_* values are the dimensions of the viewing rectangle in world-space.
-        let viewport_height: f64 = 2.0;
+        let viewport_height: f64 = 2.0 * h * focal_length;
         let viewport_width: f64 =
             viewport_height * (self.img_width as f64) / (self.img_height as f64);
 
-        // other camera parameters.
-        let focal_length = 1.0;
-        self.center = Point::new(0.0, 0.0, 0.0);
 
         // w/l vectors for the viewport rectangle.
-        let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);
-        let viewport_v = Vec3::new(0.0, -viewport_height, 0.0);
+        let viewport_u = viewport_width * self.u;
+        let viewport_v = viewport_height * -self.v;
 
         // pixel-to-pixel spacing vectors.
         self.pixel_delta_u = viewport_u / (self.img_width as f64);
@@ -92,7 +113,7 @@ impl Camera {
 
         // anchor loc for top-left pixel.
         let viewport_upper_left =
-            self.center - Vec3::new(0.0, 0.0, focal_length) - viewport_u / 2.0 - viewport_v / 2.0;
+            self.center - (focal_length * self.w) - viewport_u / 2.0 - viewport_v / 2.0;
         self.anchor = viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
 
         self.pixel_sample_scale = 1.0 / self.samples_per_pixel as f64;
@@ -134,4 +155,8 @@ fn sample_square() -> Vec3 {
         rand::rng().random::<f64>() - 0.5f64,
         0.0,
     )
+}
+
+fn deg_to_rad(deg: f64) -> f64 {
+    deg * std::f64::consts::PI / 180.0
 }

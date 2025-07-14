@@ -55,7 +55,7 @@ pub fn dot(a: Vec3, b: Vec3) -> f64 {
 pub fn cross(a: Vec3, b: Vec3) -> Vec3 {
     Vec3::new(
         a[1] * b[2] - a[2] * b[1],
-        a[0] * b[2] - a[2] * b[0],
+        a[2] * b[0] - a[0] * b[2],
         a[0] * b[1] - a[1] * b[0],
     )
 }
@@ -95,6 +95,19 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
     }
 }
 
+pub fn random_on_unit_disk() -> Vec3 {
+    loop {
+        let p = Vec3::new(
+            rand::rng().random_range(-1.0..1.0),
+            rand::rng().random_range(-1.0..1.0),
+            0.0,
+        );
+        if p.norm_sq() < 1.0 {
+            return p;
+        }
+    }
+}
+
 pub fn reflect(vector: Vec3, normal: Vec3) -> Vec3 {
     vector - 2.0 * dot(vector, normal) * normal
 }
@@ -102,7 +115,7 @@ pub fn reflect(vector: Vec3, normal: Vec3) -> Vec3 {
 pub fn refract(uv: Vec3, normal: Vec3, etai_over_etat: f64) -> Vec3 {
     let cos_theta = 1.0f64.min(dot(-uv, normal));
     let r_out_perp = etai_over_etat * (uv + cos_theta * normal);
-    let r_out_parallel = - (1.0 - r_out_perp.norm_sq()).abs().sqrt() * normal;
+    let r_out_parallel = -(1.0 - r_out_perp.norm_sq()).abs().sqrt() * normal;
     r_out_perp + r_out_parallel
 }
 

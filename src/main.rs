@@ -5,6 +5,7 @@ use crate::material::Lambertian;
 use crate::material::Metal;
 use crate::sphere::Sphere;
 use crate::vec3::Point;
+use crate::vec3::Vec3;
 use std::rc::Rc;
 
 mod camera;
@@ -49,10 +50,13 @@ fn main() {
         stone.clone(),
     )));
 
-    let mut camera = camera::Camera::new(aspect, img_width);
+    let mut camera = camera::Camera::new(
+        aspect,
+        img_width,
+        90.0,
+        Point::new(-2.0, 2.0, 1.0),
+        Point::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+    );
     camera.render(&world);
-}
-
-fn deg_to_rad(deg: f64) -> f64 {
-    deg * std::f64::consts::PI / 180.0
 }
