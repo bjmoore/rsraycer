@@ -1,5 +1,6 @@
 use crate::color::Color;
 use crate::hittable_list::HittableList;
+use crate::material::Dielectric;
 use crate::material::Lambertian;
 use crate::material::Metal;
 use crate::sphere::Sphere;
@@ -22,12 +23,18 @@ fn main() {
     let img_width: u32 = 1920;
 
     let stone = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
-    let blue_metal = Rc::new(Metal::new(Color::new(0.1, 0.1, 0.8)));
+    let blue_metal = Rc::new(Metal::new(Color::new(0.1, 0.1, 0.8), 0.05));
+    let glass = Rc::new(Dielectric::new(1.5));
 
     // world of spheres.
     let mut world = HittableList::new();
     world.add(Rc::new(Sphere::new(
         Point::new(1.0, 0.0, -1.0),
+        0.5,
+        glass.clone(),
+    )));
+    world.add(Rc::new(Sphere::new(
+        Point::new(0.0, 0.0, -1.5),
         0.5,
         blue_metal.clone(),
     )));
