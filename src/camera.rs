@@ -62,7 +62,7 @@ impl Camera {
             look_from,
             look_at,
             v_up,
-            samples_per_pixel: 10,
+            samples_per_pixel: 500,
             max_depth: 50,
             defocus_angle: 0.2,
             focus_dist: (look_from - look_at).norm(),

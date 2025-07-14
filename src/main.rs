@@ -69,9 +69,9 @@ fn main() {
                 j as f64 + 0.9 * rand::rng().random::<f64>(),
             );
 
-            if (center - Point::new(4.0, 0.2, 0.0)).norm() > 1.0
-                && (center - Point::new(-4.0, 0.2, 0.0)).norm() > 1.0
-                && (center - Point::new(0.0, 0.2, 0.0)).norm() > 1.0
+            if (center - Point::new(4.0, 2.0, 0.0)).norm() > 2.2
+                && (center - Point::new(-4.0, 2.0, 0.0)).norm() > 2.2
+                && (center - Point::new(0.0, 2.0, 0.0)).norm() > 2.2
             {
                 if mat < 0.8 {
                     // diffuse
